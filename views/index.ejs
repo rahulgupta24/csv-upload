@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CSV File Upload</title>
+  <link rel="stylesheet" href="/styles.css"> <!-- Link to an external stylesheet -->
+</head>
+<body>
+  <div class="navigation-panel">
+    <a href="/">Home</a> <!-- Navigation link to the home page (index.ejs) -->
+    <a href="/list">View CSV Files</a> <!-- Navigation link to the CSV files list (csvList.ejs) -->
+  </div>
+  <h1>CSV File Upload</h1>
+
+  <!-- Message Placeholder -->
+  <div id="message" class="message"></div> <!-- Container for displaying messages -->
+
+  <!-- Form for uploading CSV files -->
+  <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+    <input type="file" name="csvFile" accept=".csv"> <!-- Input for selecting a CSV file -->
+    <button type="submit">Upload CSV</button> <!-- Button to submit the form -->
+  </form>
+
+  <script>
+    // JavaScript code to display messages
+    const message = document.getElementById('message'); // Get the message container element
+    const urlParams = new URLSearchParams(window.location.search); // Parse URL parameters
+    const postStatus = urlParams.get('status'); // Get the 'status' parameter from the URL
+
+    // Display success or error message based on the 'status' parameter
+    if (postStatus === 'success') {
+      message.innerText = 'CSV file uploaded successfully.'; // Success message
+      message.classList.add('success'); // Add a 'success' class for styling
+    } else if (postStatus === 'error') {
+      message.innerText = 'Error uploading CSV file. Please try again.'; // Error message
+      message.classList.add('error'); // Add an 'error' class for styling
+    }
+
+    // Function to validate form submission
+function validateForm() {
+    const fileInput = document.querySelector('input[type="file"]'); // Get the file input element
+    const allowedExtensions = ["csv"]; // Define allowed file extensions
+
+    if (!fileInput.files.length) {
+      message.innerText = 'Please select a file to upload.'; // Display an error message if no file is selected
+      message.classList.add('error'); // Add an 'error' class for styling
+      return false; // Prevent form submission if no file is selected
+    }
+
+    const fileName = fileInput.files[0].name;
+    const fileExtension = fileName.split('.').pop().toLowerCase();
+
+    if (!allowedExtensions.includes(fileExtension)) {
+      message.innerText = 'Please select a CSV file to upload.'; // Display an error message if the file is not a CSV
+      message.classList.add('error'); // Add an 'error' class for styling
+      return false; // Prevent form submission if the file is not a CSV
+    }
+
+    return true; // Allow form submission if a CSV file is selected
+  }
+  </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/styles.css"> <!-- Link to an external stylesheet -->
+  <title>CSV Files List</title>
+</head>
+<body>
+  <div class="navigation-panel">
+    <a href="/">Home</a> <!-- Link to the home page (index.ejs) -->
+    <a href="/list">View CSV Files</a> <!-- Link to the CSV files list (csvList.ejs) -->
+  </div>
+  <h1>Uploaded CSV Files</h1>
+  <ul>
+    <% files.forEach(file => { %> <!-- Loop through the list of files -->
+      <li><a href="/view/<%= file %>"><%= file %></a></li> <!-- Create a list item with a link to view each CSV file -->
+    <% }); %>
+  </ul>
+
+  <!-- Add this code at the bottom of csvList.ejs -->
+  <div class="back-button">
+    <a href="/">Back to Home</a> <!-- Link to navigate back to the home page -->
+  </div>
+</body>
+</html>

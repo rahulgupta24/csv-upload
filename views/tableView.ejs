@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CSV Data Table</title>
+  <link rel="stylesheet" type="text/css" href="/styles.css"> <!-- Link to an external stylesheet -->
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> <!-- Load Google Charts library -->
+  <script type="text/javascript">
+    google.charts.load('current', {'packages': ['corechart']}); // Load Google Charts and set 'corechart' package
+    google.charts.setOnLoadCallback(drawChart); // Callback function to draw a chart
+
+    var selectedColumn = ''; // Store the selected column globally
+    var data = []; // Data array for the CSV table
+
+    var initialData = null; // Placeholder for initial data
+
+    // Function to search and filter the table
+    function searchTable() {
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("searchInput"); // Get the search input element
+      filter = input.value.toUpperCase(); // Get the search query and convert to uppercase
+      table = document.getElementById("csvTable"); // Get the table element
+      tr = table.getElementsByTagName("tr"); // Get table rows
+
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0]; // Change to the desired column index for searching
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = ""; // Show the row if the search query is found
+          } else {
+            tr[i].style.display = "none"; // Hide the row if the search query is not found
+          }
+        }
+      }
+    }
+    
+    // Function to sort the table
+    function sortTable(columnIndex) {
+      var table, rows, switching, i, x, y, shouldSwitch;
+      table = document.getElementById("csvTable"); // Get the table element
+      switching = true;
+
+      while (switching) {
+        switching = false;
+        rows = table.rows;
+
+        for (i = 1; i < (rows.length - 1); i++) {
+          shouldSwitch = false;
+          x = rows[i].getElementsByTagName("td")[columnIndex]; // Change to the desired column index for sorting
+          y = rows[i + 1].getElementsByTagName("td")[columnIndex]; // Change to the desired column index for sorting
+
+          if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+            shouldSwitch = true;
+            break;
+          }
+        }
+
+        if (shouldSwitch) {
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- Navigation Links -->
+  <div class="navigation-panel">
+    <a href="/">Home</a> <!-- Link to the home page (index.ejs) -->
+    <a href="/list">View CSV Files</a> <!-- Link to the CSV files list (csvList.ejs) -->
+  </div>
+ 
+  <h1>CSV Data - <%= filename %></h1>
+
+  <!-- Search Box -->
+  <input type="text" id="searchInput" placeholder="Search...">
+  <button onclick="searchTable()">Search</button>
+
+
+
+<!-- Sorting Buttons and Table Rows -->
+
+<% if (data && data.length > 0) { %>
+  <!-- Generate sorting buttons and table rows -->
+  <% Object.keys(data[0]).forEach((column, columnIndex) => { %>
+    <button onclick="sortTable(<%= columnIndex %>)">Sort by <%= column %></button>
+  <% }); %>
+  <!-- Generate table rows here -->
+<% } else { %>
+  <p>No data available.</p>
+<% } %>
+
+
+
+<!-- CSV Data Table -->
+<table id="csvTable">
+  <thead>
+    <tr>
+      <% if (data.length > 0) { %>
+        <!-- Generate table headers when data is not empty -->
+        <% Object.keys(data[0]).forEach((column) => { %>
+          <th><%= column %></th>
+        <% }); %>
+        <!-- Add more table headers for additional columns as needed -->
+      <% } %>
+    </tr>
+  </thead>
+  <tbody>
+    <% data.forEach((row, rowIndex) => { %>
+      <tr>
+        <% Object.keys(row).forEach((key) => { %>
+          <td><%= row[key] %></td>
+        <% }); %>
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
+
+
+  <!-- Pagination Controls -->
+  <div class="pagination">
+    <% if (pageCount > 1) { %>
+      <ul>
+        <% if (page > 1) { %>
+          <li><a href="?page=1">First</a></li>
+          <li><a href="?page=<%= page - 1 %>">Previous</a></li>
+        <% } %>
+
+        <% for (let i = Math.max(1, page - 2); i <= Math.min(pageCount, page + 2); i++) { %>
+          <li class="<%= i === page ? 'active' : '' %>"><a href="?page=<%= i %>"><%= i %></a></li>
+        <% } %>
+
+        <% if (page < pageCount) { %>
+          <li><a href="?page=<%= page + 1 %>">Next</a></li>
+          <li><a href="?page=<%= pageCount %>">Last</a></li>
+        <% } %>
+      </ul>
+    <% } %>
+  </div>
+
+  <!-- Back Button to CSV Files List -->
+  <div class="back-button">
+    <a href="/list">Back to CSV Files List</a>
+  </div>
+</body>
+</html>
